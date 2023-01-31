@@ -1,0 +1,419 @@
+```{r}
+library(ggplot2)
+library(matlib)
+library(rsample)
+
+
+setwd("D:/Drive/OneDrive/MSC Data Science/Statistical_Methods/")
+getwd()
+
+# Importing X data and  reading dataset time and loading into data matrix
+time_dataset = read.csv("time_dataset.csv")
+Time_matrix = as.matrix(rbind(0, time_dataset))
+
+
+
+# reading dataset X and loading into data matrix
+library(readr)
+ X_dataset <- read.csv("X_dataset.csv")
+ X_matrix = as.matrix(X_dataset)
+ colnames(X_matrix) = c("X1","X2","X3","X4")
+
+ 
+ 
+ # reading dataset Y and loading into data matrix
+ 
+ Y_dataset <- read.csv("Y_dataset.csv")
+ Y_matrix = as.matrix(Y_dataset)
+ colnames(Y_matrix)<-c("Y")
+
+
+```
+
+```{r}
+## Task 1: Creating a time series plot
+#Defining the value of X and Y against time for timeseries plot.
+X.ts<-ts(X_matrix,start = c(min(Time_matrix),max(Time_matrix)),frequency =1)
+Y.ts<-ts(Y_matrix,start = c(min(Time_matrix),max(Time_matrix)),frequency =1)
+
+
+#Plotting those graphs
+plot(X.ts,main = "Time series plot of X Signal" ,xlab = "Time", ylab = "Input signal" )
+plot(Y.ts,main = "Time series plot of Y Signal", xlab = "Time", ylab = "Output signal")
+
+```
+```{r}
+dis=density(X_matrix)
+plot(dis,main = "Density Plot Of All Input Signal")
+```
+
+```{r}
+##Task 1: Creating a density plot with the help of histogram
+#Creating a density if X signal
+dis=density(X_matrix)
+plot(dis,main = "Density Plot of All Input Signal",col="black")
+# Creating a Histrogram of X signal
+hist(X_matrix,freq = FALSE,main = "Density")
+
+#Creating a density if X1 signal#Adding density in the histogram
+lines(dis,lwd=2,col="purple")
+rug(jitter(X_matrix))
+dis_X1=density(X_matrix[,"X1"])
+hist(X_matrix[,"X1"],freq = FALSE,main = "Histogram And Density Plot of X1",xlab = "X1 Signal")
+lines(dis_X1,lwd=2,col="green")
+
+# Add the data-poins with noise in the X-axis
+rug(jitter(X_matrix[,"X1"]))
+#Creating a density if X2 signal
+dis_X2=density(X_matrix[,"X2"])
+hist(X_matrix[,"X2"],freq = FALSE,main = "Histogram And Density Plot of X2",xlab = "X2 Signal")
+lines(dis_X2,lwd=2,col="red")
+rug(jitter(X_matrix[,"X2"]))
+#Creating a density if X3 signal
+dis_X3=density(X_matrix[,"X3"])
+hist(X_matrix[,"X3"],freq = FALSE,main = "Histogram And Density Plot of X3",xlab = "X3 Signal")
+lines(dis_X3,lwd=2,col="blue")
+rug(jitter(X_matrix[,"X3"]))
+#Creating a density if X3 signal
+dis_X4=density(X_matrix[,"X4"])
+hist(X_matrix[,"X4"],freq = FALSE,main = "Histogram And Density Plot of X4",xlab = "X4 Signal")
+lines(dis_X1,lwd=2,col="orange")
+rug(jitter(X_matrix[,"X4"]))
+#Creating a density if Y signal
+dis_y=density(Y_matrix)
+plot(dis_y,main = "Density plot of Y",xlab = "Output Signal")
+hist(Y_matrix,freq = FALSE,main = "Histogram And Density Plot of Y",xlab = "Output Signal")
+lines(dis_y,lwd=2,col="brown")
+rug(jitter(Y_matrix))
+```
+```{r}
+## Task 1: Creating Correlation and Scatter plot.
+# Plotting X1 against 
+plot(X_matrix[,"X1"],Y_matrix,main = "Correlation betweeen X1 and Y signal", xlab = "X1 signal", ylab = "Output
+signal",col="royalblue" )
+# Plotting X2 against Y
+plot(X_matrix[,"X2"],Y_matrix,main = "Correlation betweeen X2 and Y signal", xlab = "X2 signal", ylab = "Output
+signal",col="red" )
+# Plotting X3 against Y
+plot(X_matrix[,"X3"],Y_matrix,main = "Correlation betweeen X3 and Y signal", xlab = "X3 signal", ylab = "Output
+signal",col="magenta3" )
+# Plotting X4 against Y
+plot(X_matrix[,"X4"],Y_matrix,main = "Correlation betweeen X4 and Y signal", xlab = "X4 signal", ylab = "Output
+signal",col="slateblue3" )
+```
+
+
+```{r}
+#TASK 2 calculating the one for column binding the data
+one = matrix(1 , length(X_matrix)/4,1)
+print(one)
+```
+
+```{r}
+#Task 2.1 computing theta hat (XTX)-1XTy by binding the data from equation 1
+#MOdel 1 is denoted by mod1 and respectively up to model 5 as mod5
+
+X_mod1<-cbind(one,(X_matrix[,"X4"]),(X_matrix[,"X1"])^2,(X_matrix[,"X1"])^3,(X_matrix[,"X2"])^4,(X_matrix[,"X1"])^4)
+X_mod1
+
+#Calculating thetahat of model 1
+
+Mod1_thetahat=solve(t(X_mod1) %*% X_mod1) %*% t(X_mod1) %*% Y_matrix
+Mod1_thetahat
+
+
+
+#Binding data from equation of model 2.
+X_mod2<-cbind(one,(X_matrix[,"X4"]),(X_matrix[,"X1"])^3,(X_matrix[,"X3"])^4  )
+X_mod2
+#Calculating thetahat of Model 2
+Mod2_thetahat=solve(t(X_mod2) %*% X_mod2) %*% t(X_mod2) %*% Y_matrix
+Mod2_thetahat
+
+
+#Binding data from equation of model 3.
+X_mod3<-cbind(one,(X_matrix[,"X3"])^3,(X_matrix[,"X3"])^4)
+X_mod3
+#Calculating thetahat of Model 3
+Mod3_thetahat=solve(t(X_mod3) %*% X_mod3) %*% t(X_mod3) %*% Y_matrix
+Mod3_thetahat
+
+#For model 4
+#Binding data from equation of model 4.
+X_mod4<-cbind(one,X_matrix[,"X2"],X_matrix[,"X1"]^3,X_matrix[,"X3"]^4)
+X_mod4
+#Calculating thetahat of Model 4
+Mod4_thetahat=solve(t(X_mod4) %*% X_mod4) %*% t(X_mod4) %*% Y_matrix
+Mod4_thetahat
+#Binding data from equation of model 5.
+X_mod5<-cbind(one,X_matrix[,"X4"],X_matrix[,"X1"]^2,X_matrix[,"X1"]^3,X_matrix[,"X3"]^4)
+X_mod5
+#Calculating thetahat of Model 5
+Mod5_thetahat=solve(t(X_mod5) %*% X_mod5) %*% t(X_mod5) %*% Y_matrix
+Mod5_thetahat
+
+```
+
+
+```{r}
+##Task 2.2
+#Calculating Y-hat and RSS Mod 1
+Y_hat_m1 = X_mod1 %*% Mod1_thetahat
+Y_hat_m1
+#Calculating RSS
+RSS_Mod_1=sum((Y_matrix-Y_hat_m1)^2)
+RSS_Mod_1
+#Calculating Y-hat and RSS of Mod 2
+Y_hat_m2 = X_mod2 %*% Mod2_thetahat
+Y_hat_m2
+RSS_Mod_2=sum((Y_matrix-Y_hat_m2)^2)
+RSS_Mod_2
+
+#Calculating Y-hat and RSS of Mod 3
+Y_hat_m3 = X_mod3 %*% Mod3_thetahat
+Y_hat_m3
+RSS_Mod_3=sum((Y_matrix-Y_hat_m3)^2)
+RSS_Mod_3
+#Calculating Y-hat and RSS of Mod 4
+Y_hat_m4 = X_mod4 %*% Mod4_thetahat
+Y_hat_m4
+RSS_Mod_4=sum((Y_matrix-Y_hat_m4)^2)
+RSS_Mod_4
+#Calculating Y-hat and RSS of Mod 5
+Y_hat_m5 = X_mod5 %*% Mod5_thetahat
+Y_hat_m5
+RSS_Mod_5=sum((Y_matrix-Y_hat_m5)^2)
+RSS_Mod_5
+
+
+RSS_Mod_1
+RSS_Mod_2
+RSS_Mod_3
+RSS_Mod_4
+RSS_Mod_5
+```
+```{r}
+### Task 2.3 Calculating likelihood and Variance of each model
+N=length(Y_matrix)
+#Calculating the Variance of Model 1
+
+Var_modl1=RSS_Mod_1/(N-1)
+Var_modl1
+#Calculating the log-likelihood of Model 1
+likehood_Mod_1=
+-(N/2)*(log(2*pi))-(N/2)*(log(Var_modl1))-(1/(2*Var_modl1))*RSS_Mod_1
+likehood_Mod_1
+#Calculating Variance and log-likelihood of Model 2
+Var_modl2=RSS_Mod_2/(N-1)
+Var_modl2
+likehood_Mod_2=
+-(N/2)*(log(2*pi))-(N/2)*(log(Var_modl2))-(1/(2*Var_modl2))*RSS_Mod_2
+likehood_Mod_2
+#Calculating Variance and log-likelihood of Model 3
+Var_modl3=RSS_Mod_3/(N-1)
+Var_modl3
+likehood_Mod_3=
+-(N/2)*(log(2*pi))-(N/2)*(log(Var_modl3))-(1/(2*Var_modl3))*RSS_Mod_3
+likehood_Mod_3
+#Calculating Variance and log-likelihood of Model 4
+Var_modl4=RSS_Mod_4/(N-1)
+Var_modl4
+likehood_Mod_4=
+-(N/2)*(log(2*pi))-(N/2)*(log(Var_modl4))-(1/(2*Var_modl4))*RSS_Mod_4
+likehood_Mod_4
+#Calculating Variance and log-likelihood of Model 5
+Var_modl5=RSS_Mod_5/(N-1)
+Var_modl5
+likehood_Mod_5=
+-(N/2)*(log(2*pi))-(N/2)*(log(Var_modl5))-(1/(2*Var_modl5))*RSS_Mod_5
+likehood_Mod_5
+
+likehood_Mod_1
+likehood_Mod_2
+likehood_Mod_3
+likehood_Mod_4
+likehood_Mod_5
+```
+```{r}
+### Task 2.4 Calculating AIC And BIC of Each model
+##Calculating AIC and BIC of model 1
+K_mod1<-length(Mod1_thetahat)
+K_mod1
+AIC_mod1=2*K_mod1-2*likehood_Mod_1
+AIC_mod1
+BIC_mod1=K_mod1*log(N)-2*likehood_Mod_1
+BIC_mod1
+## thetahat of model 2
+K_mod2<-length(Mod2_thetahat)
+K_mod2
+##Calculating AIC and BIC of model 2
+AIC_mod2=2*K_mod2-2*likehood_Mod_2
+AIC_mod2
+BIC_mod2=K_mod2*log(N)-2*likehood_Mod_2
+BIC_mod2
+## thetahat of model 3
+K_mod3<-length(Mod3_thetahat)
+K_mod3
+##Calculating AIC and BIC of model 3
+AIC_mod3=2*K_mod3-2*likehood_Mod_3
+AIC_mod3
+BIC_mod3=K_mod3*log(N)-2*likehood_Mod_3
+BIC_mod3
+## thetahat of model 4
+K_mod4<-length(Mod4_thetahat)
+K_mod4
+##Calculating AIC and BIC of model 4
+AIC_mod4=2*K_mod4-2*likehood_Mod_4
+AIC_mod4
+BIC_mod4=K_mod4*log(N)-2*likehood_Mod_4
+BIC_mod4
+## thetahat of model 5
+K_mod5<-length(Mod5_thetahat)
+K_mod5
+##Calculating AIC and BIC of model 5
+AIC_mod5=2*K_mod5-2*likehood_Mod_5
+AIC_mod5
+BIC_mod5=K_mod5*log(N)-2*likehood_Mod_5
+BIC_mod5
+
+AIC_mod1
+AIC_mod2
+AIC_mod3
+AIC_mod4
+AIC_mod5
+BIC_mod1
+BIC_mod2
+BIC_mod3
+BIC_mod4
+BIC_mod5
+```
+```{r}
+## Task 2.5
+## Error of mod1
+mod1_error <- Y_matrix-Y_hat_m1
+## Plotting the graph QQplot and QQ line of mod 1
+qqnorm(mod1_error, col = "orange2",main = "QQ plot of mod 1")
+qqline(mod1_error, col = "red",lwd=1)
+## Error of mod2
+mod2_error <- Y_matrix-Y_hat_m2 # error of mod 2
+## Plotting QQplot and QQ line of mod 2
+qqnorm(mod2_error, col = "darkcyan",main = "QQ plot of mod 2")
+qqline(mod2_error, col = "red")
+## Error of mod3
+mod3_error <- Y_matrix- Y_hat_m3
+## Plotting QQplot and QQ line of mod 3
+qqnorm(mod3_error, col = "purple",main = "QQ plot of mod 3")
+qqline(mod3_error, col = "red")
+## Error of mod4
+mod4_error <- Y_matrix-Y_hat_m4
+## Plotting QQplot and QQ line of mod 4
+qqnorm(mod4_error, col = "violet",main = "QQ plot of mod 4")
+qqline(mod4_error, col = "red")
+## Error of mod5
+mod5_error <- Y_matrix- Y_hat_m5
+## Plotting QQplot and QQ line of mod 5
+qqnorm(mod5_error, col = "skyblue",main = "QQ plot of mod 5")
+qqline(mod5_error, col = "red")
+
+```
+
+
+```{r}
+### Task 2.7
+## Spliting the data of y into 2 form i.e. Traning and testing data set.
+library(tidymodels)
+tidymodels_prefer()
+
+## Spliting the data of y into 2 form i.e. training and testing data set.
+split_Y<-initial_split(data = as.data.frame(Y_matrix),prop=.7)
+## training Y data split
+Y_training_set<-training(split_Y)
+Y_testing_set<-as.matrix(testing(split_Y))
+## Testing Y data split
+Y_training_data<-as.matrix(Y_training_set)
+## Spliting the data of y into 2 form i.e. training and testing data set.
+split_X<-initial_split(data = as.data.frame(X_matrix),prop=.7)
+## training X data split
+X_training_set<-training(split_X)
+## Testing X data split
+X_testing_set<-as.matrix(testing(split_X))
+X_testing_data<-as.matrix(X_testing_set)
+X_training_data<-as.matrix(X_training_set)
+### Estimating model parameters using training set
+training_ones=matrix(1 , length(X_training_set$X1),1)
+X_training_model<-cbind(training_ones,X_training_set[,"X2"],(X_training_set[,"X1"])^3,(X_training_set[
+,"X3"])^4)
+training_thetahat = solve(t(X_training_model) %*% X_training_model) %*% t(X_training_model) %*% Y_training_data
+  
+### Model out/Prediction
+Y_testing_hat = X_testing_data %*% training_thetahat
+Y_testing_hat
+RSS_testing=sum((Y_testing_set-Y_testing_hat)^2)
+RSS_testing
+t.test(Y_training_data, mu=500, alternative="two.sided", conf.level=0.95)
+C_I1=-0.2783950
+C_I2=0.2762101
+p2 <- plot(density(Y_training_data), col="blue", lwd=2,
+main="Distribution of training Data")
+abline(v=C_I1,col="red", lty=2)
+abline(v=C_I2,col="red", lty=2)
+thetaHat_training =solve(t(X_training_data) %*% X_training_data) %*% t(X_training_data) %*%Y_training_data
+thetaHat_training
+length(thetaHat_training)
+dis_test=density(Y_training_data)
+plot((dis_test))
+plot(dis_test,main = "Density plot of Y Signal")
+### Calculating Confidential interval
+z=1.96 ##(95%) Confidential interval
+error=((Y_testing_set-Y_testing_hat))
+n_len=length(Y_testing_hat)
+C_I_1= z * sqrt( (error * (1-error) ) / n_len)
+C_I_1
+error
+C_I_2= z*sqrt(error*(1+error)/n_len)
+C_I_2
+```
+
+
+
+```{r}
+##Task 3
+## Model 3 will be used, parameter are selected and kept constant.
+arr_1=0
+arr_2=0
+f_value=0
+s_value=0
+Mod3_thetahat
+#values from thetahat
+thetebias <- 0.448299550 #choosen parameter
+thetaone <- 0.038109255 # chosen prarameter
+thetatwo <- 0.009827804 # constant value
+thetafour <- 0.002092558 # constant value
+Epison <- RSS_Mod_3 * 2 ## fixing value of eplision
+num <- 100 #number of iteration
+##Calculating Y-hat for performing rejection ABC
+counter <- 0
+for (i in 1:num) {
+range1 <- runif(1,-0.448299550,0.448299550) # calculating the range
+range1
+range2 <- runif(1,-0.038109255,0.038109255)
+New_thetahat <- matrix(c(range1,range2,thetatwo,thetafour))
+New_Y_Hat <- X_mod3 %*% New_thetahat ## New Y hat
+new_RSS <- sum((Y_matrix-New_Y_Hat)^2)
+new_RSS
+if (new_RSS > Epison){
+arr_1[i] <- range1
+arr_2[i] <- range2
+counter = counter+1
+f_value <- matrix(arr_1)
+s_value <- matrix(arr_2)
+}
+}
+hist(f_value)
+hist(s_value)
+###ploting the graph
+plot(f_value,s_value, col = c("red", "blue"), main = "Joint and Marginal Posterior Distribution")
+```
+
+
+
